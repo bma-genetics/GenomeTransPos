@@ -1,23 +1,33 @@
 
+1. 把vcf里面SNP的位置拿出来
 time awk '{print $1"\t"$2"\t"$4}' OldSNP.vcf > SNPIndel.pos
 
+2. 把SNP的碱基和旧基因组对一下看看是不是正确
 time perl 1.ConfirmBaseOnRef.pl | awk '{if($4!=$5){print}}' | wc -l
 
+3. 把SNP周围的序列（左右500bp）拿出来
 time perl 2.ExtractSequenceFromRef.pl > SNPContextSequence.fasta
 
+4. 把拿出来的序列比对到新的参考基因组上
 time bwa mem -t 1 \
              /public/share/bma/20160202NewData/NewConnectMatePair01/GeneticMatePairLink3-2-1-Hybrid/AGP/SequenceConcat600BAC/ChrRefIndex/Tu1.fasta \
              SNPContextSequence.fasta \
              > Tu1-SNP.sam
 
+5. 只要完整比对上的序列，其余扔掉
 time cat Tu1-SNP.sam | awk '{print $1"\t"$2"\t"$3"\t"$4"\t"$6"\t"$12"\t"$14}' | grep "NM:i:0" | awk '{if($5~/^[0-9]+M$/)print}' > Tu1-SNP.sam.simple
 
+6. 找到一个最好的比对位置，同时转换格式
 time perl 2.simpleFindBestPick.pl  | sort -V -k3,3 -k4,4n > Tu1-SNP.sam.simple.filter
 
+7. 找到SNP在旧参考基因组上的偏移量（主要是有N在附近，除掉N之后坐标有改变），并给SNP一个标识
 time perl 3.SNPCoorOnExtract.pl > SNPContextPos.txt
 
+8. SNP转换到新参考基因组上，注意反向互补的序列比对上的SNP需要改变成反向互补，反向互补的Indel需要重新计算坐标
 time perl 4.SNPCoorConvert.pl > SNPCovertPos.txt
 
+9. 检测转换后的SNP的序列和新参考基因组上的序列是否一致
 time perl 5.CheckSNPOnNewRef.pl | awk '{if($4!=$5){print}}' | wc -l
 
+10. 把旧VCF的信息转换到新的VCF上，同时需要排序
 time perl 6.ConvertToVCF.pl | sort -V -k1,1 -k2,2n > ConvertedSNP.vcf
