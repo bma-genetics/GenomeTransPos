@@ -1,0 +1,23 @@
+
+time awk '{print $1"\t"$2"\t"$4}' OldSNP.vcf > SNPIndel.pos
+
+time perl 1.ConfirmBaseOnRef.pl | awk '{if($4!=$5){print}}' | wc -l
+
+time perl 2.ExtractSequenceFromRef.pl > SNPContextSequence.fasta
+
+time bwa mem -t 1 \
+             /public/share/bma/20160202NewData/NewConnectMatePair01/GeneticMatePairLink3-2-1-Hybrid/AGP/SequenceConcat600BAC/ChrRefIndex/Tu1.fasta \
+             SNPContextSequence.fasta \
+             > Tu1-SNP.sam
+
+time cat Tu1-SNP.sam | awk '{print $1"\t"$2"\t"$3"\t"$4"\t"$6"\t"$12"\t"$14}' | grep "NM:i:0" | awk '{if($5~/^[0-9]+M$/)print}' > Tu1-SNP.sam.simple
+
+time perl 2.simpleFindBestPick.pl  | sort -V -k3,3 -k4,4n > Tu1-SNP.sam.simple.filter
+
+time perl 3.SNPCoorOnExtract.pl > SNPContextPos.txt
+
+time perl 4.SNPCoorConvert.pl > SNPCovertPos.txt
+
+time perl 5.CheckSNPOnNewRef.pl | awk '{if($4!=$5){print}}' | wc -l
+
+time perl 6.ConvertToVCF.pl | sort -V -k1,1 -k2,2n > ConvertedSNP.vcf
