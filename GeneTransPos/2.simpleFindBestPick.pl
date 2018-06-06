@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use Cwd;
 
-my $InputFile = 'TuS-Gene.sam.simple';
+my $InputFile = shift; # 'TuS-Gene.sam.simple';
 
 my %GeneHash = ();
 
@@ -36,7 +36,7 @@ open(INFILE,  "$InputFile") || die "cannot open file $InputFile\n" ;
             # print STDERR $line."\n"
         }
         
-        if ( $CIGAR =~ m/^(\d+)M$/) { # 完全比对上的情况
+        if ( $CIGAR =~ m/^(\d+)M$/) { 
                 $Length = $1;
         }else{
             # print STDERR $line."\n";
