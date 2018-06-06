@@ -21,7 +21,9 @@ cat \*.sam | awk '{print $1"\t"$2"\t"$3"\t"$4"\t"$6"\t"$12"\t"$14}' | grep "NM:i
 ```
 
 ## 3. Change posotions in gff/vcf file from old positions to new positions
-
+```
+time perl 2.simpleFindBestPick.pl TuAll-Gene.sam.simple > TuAll-Gene.sam.simple.dupli.filter
+```
 
 ## 4. Get sequences from new assembly using gff/vcf file etc.
 
