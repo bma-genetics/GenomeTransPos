@@ -5,7 +5,9 @@ Transfer genes from old assembly to new assembly
 Scripts for transfering genes from old assembly to new assembly 
 
 ## 1. Get sequences from old assembly using gff/vcf file etc.
+
 eg. WheatTu.gene.fasta
+
 eg. WheatTuGeneElements.gff
 
 ## 2. Use bwa to align DNA sequence ( genes , repeats and context sequence around SNPs ) to new assembly
